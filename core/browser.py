@@ -31,18 +31,21 @@ class BrowserManager:
             "headless": self.headless,
             "slow_mo": int(SLOW_MO) if str(SLOW_MO).isdigit() else 0,
         }
-        # 本机已装 Chrome 时可走 channel，避免未 install 浏览器内核
         if browser_type == "chromium":
-            try:
-                self.browser = launchers[browser_type].launch(
-                    **launch_kwargs, channel="chrome"
-                )
-                return self.browser
-            except Exception as exc:
-                logger.warning(f"channel=chrome 启动失败，回退默认 chromium: {exc}")
+            # 避免在本机上因 channel=chrome 过于依赖系统 Chrome 而导致页面异常关闭
+            launch_kwargs.setdefault("args", ["--no-sandbox", "--disable-dev-shm-usage"])
 
-        self.browser = launchers[browser_type].launch(**launch_kwargs)
-        return self.browser
+        try:
+            self.browser = launchers[browser_type].launch(**launch_kwargs)
+            return self.browser
+        except Exception as exc:
+            logger.warning(f"{browser_type} 启动失败，尝试回退到默认配置: {exc}")
+            fallback_kwargs = {
+                "headless": self.headless,
+                "slow_mo": int(SLOW_MO) if str(SLOW_MO).isdigit() else 0,
+            }
+            self.browser = launchers[browser_type].launch(**fallback_kwargs)
+            return self.browser
 
     def new_context(self, **kwargs) -> BrowserContext:
         """创建新的浏览器上下文 (Context)"""

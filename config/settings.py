@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 ROOT_DIR = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT_DIR / ".env")
 
-BASE_URL = os.getenv("BASE_URL", "http://localhost:20081/webapp/#/login")
+BASE_URL = os.getenv("BASE_URL", "http://192.168.4.179:20081/webapp/requirement-app/#/requirementTool?projectId=defaultProjectID")
 HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
 BROWSER = os.getenv("BROWSER", "chromium")
 SLOW_MO = os.getenv("SLOW_MO", "50")

@@ -1,0 +1,228 @@
+# 新建方案弹窗 — 表单字段测试数据
+#
+# 弹窗结构（Element UI el-dialog）：
+#   - 方案名称：input（placeholder="请输入方案名称"）
+#   - 方案类型：select（选项：使命需求 / 作战需求 / 系统需求）
+#   - 方案标识：input（placeholder="请输入方案标识"）
+#   - 方案描述：textarea（maxlength=500）
+#   - 打开方案：checkbox（默认勾选）
+#   - 按钮：取消 / 确定
+#
+# 字段说明：
+#   case        : 用例名称
+#   type        : smoke=冒烟测试 | system=系统测试 | core=核心测试
+#   category    : 标题校验 | 关闭弹窗 | 必填校验 | 字符类型 | 字符长度 | 方案描述 | 方案类型 | 打开方案 | 最近打开
+#   field       : 方案名称 / 方案标识 / 方案描述 / 方案类型 / 打开方案
+#   value       : 填入的值
+#   expected    : error=应触发校验错误 | may_pass=可能通过校验 | success=创建成功
+#   message     : 可选，期望的错误提示关键词（部分匹配）
+#   navigate    : 可选，expect_url 关键词（如 "requirementTool" / "document"）
+
+# 弹窗元素期望值
+dialog:
+  title: 新建方案
+  scheme_types: ["使命需求", "作战需求", "系统需求"]
+  default_scheme_type: 使命需求
+  desc_maxlength: 500
+  open_scheme_default: true
+
+cases:
+  # ---- 标题校验 ----
+  - case: 新建方案-弹窗标题
+    type: smoke
+    category: 标题校验
+    expected: success
+    check: title
+
+  # ---- 关闭弹窗 ----
+  - case: 新建方案-点击X关闭弹窗
+    type: smoke
+    category: 关闭弹窗
+    expected: success
+    check: close_via_x
+
+  - case: 新建方案-点击取消关闭弹窗
+    type: smoke
+    category: 关闭弹窗
+    expected: success
+    check: close_via_cancel
+
+  # ---- 必填校验 ----
+  - case: 新建方案-方案名称为空
+    type: smoke
+    category: 必填校验
+    field: 方案名称
+    value: ""
+    expected: error
+    message: 请输入方案名称
+
+  - case: 新建方案-必填字段标记
+    type: smoke
+    category: 必填校验
+    expected: success
+    check: required_labels
+    required_fields: ["方案名称", "方案类型", "方案标识"]
+
+  # ---- 字符类型：方案名称 ----
+  - case: 新建方案-方案名称含中英文数字下划线横线点号
+    type: system
+    category: 字符类型
+    field: 方案名称
+    value: "测试A_B-c.123"
+    expected: may_pass
+
+  - case: 新建方案-方案名称含英文特殊字符
+    type: system
+    category: 字符类型
+    field: 方案名称
+    value: "~!@#$%^&*()_+-=[]{}|;:',.<>?/`"
+    expected: may_pass
+
+  - case: 新建方案-方案名称中英混合
+    type: system
+    category: 字符类型
+    field: 方案名称
+    value: "中English混123合"
+    expected: may_pass
+
+  # ---- 字符类型：方案标识 ----
+  - case: 新建方案-方案标识含英文数字下划线横线
+    type: system
+    category: 字符类型
+    field: 方案标识
+    value: "TEST_code-001"
+    expected: may_pass
+
+  - case: 新建方案-方案标识含中文编码
+    type: system
+    category: 字符类型
+    field: 方案标识
+    value: "编码ABC_123"
+    expected: may_pass
+
+  - case: 新建方案-方案标识含英文特殊字符
+    type: system
+    category: 字符类型
+    field: 方案标识
+    value: "~!@#$%^&*()_+"
+    expected: may_pass
+
+  # ---- 字符长度：方案名称 ----
+  - case: 新建方案-方案名称200字符
+    type: system
+    category: 字符长度
+    field: 方案名称
+    value: "<ALPHA_200>"
+    expected: may_pass
+
+  - case: 新建方案-方案名称为空被拦截
+    type: system
+    category: 字符长度
+    field: 方案名称
+    value: ""
+    expected: error
+
+  # ---- 字符长度：方案标识 ----
+  - case: 新建方案-方案标识200字符
+    type: system
+    category: 字符长度
+    field: 方案标识
+    value: "<ALPHA_B_200>"
+    expected: may_pass
+
+  # ---- 方案描述 ----
+  - case: 新建方案-方案描述保留空格
+    type: system
+    category: 方案描述
+    field: 方案描述
+    value: "  前导空格  中间多个空格  末尾空格  "
+    expected: may_pass
+    check: preserves_spaces
+
+  - case: 新建方案-方案描述保留换行
+    type: system
+    category: 方案描述
+    field: 方案描述
+    value: "第一行\n\n第三行（空行间隔）\n    缩进行"
+    expected: may_pass
+    check: preserves_line_breaks
+
+  - case: 新建方案-方案描述maxlength属性
+    type: smoke
+    category: 方案描述
+    expected: success
+    check: maxlength
+
+  # ---- 方案类型 ----
+  - case: 新建方案-方案类型下拉选项数量
+    type: smoke
+    category: 方案类型
+    expected: success
+    check: type_options_count
+
+  - case: 新建方案-方案类型默认值
+    type: smoke
+    category: 方案类型
+    expected: success
+    check: default_type
+
+  - case: 新建方案-选择方案类型使命需求
+    type: system
+    category: 方案类型
+    field: 方案类型
+    value: "使命需求"
+    expected: may_pass
+
+  - case: 新建方案-选择方案类型作战需求
+    type: system
+    category: 方案类型
+    field: 方案类型
+    value: "作战需求"
+    expected: may_pass
+
+  - case: 新建方案-选择方案类型系统需求
+    type: system
+    category: 方案类型
+    field: 方案类型
+    value: "系统需求"
+    expected: may_pass
+
+  # ---- 打开方案 ----
+  - case: 新建方案-打开方案默认勾选
+    type: smoke
+    category: 打开方案
+    expected: success
+    check: open_scheme_default
+
+  - case: 新建方案-打开方案切换状态
+    type: smoke
+    category: 打开方案
+    expected: success
+    check: open_scheme_toggle
+
+  - case: 新建方案-不勾选打开方案创建后留在当前页
+    type: core
+    category: 打开方案
+    expected: success
+    navigate: requirementTool
+    check: create_without_open
+
+  - case: 新建方案-勾选打开方案创建后跳转文档页
+    type: core
+    category: 打开方案
+    expected: success
+    navigate: document
+    check: create_with_open
+
+  # ---- 最近打开 ----
+  - case: 新建方案-勾选打开方案创建后出现在最近打开
+    type: core
+    category: 最近打开
+    expected: success
+    check: in_recent_open
+
+  - case: 新建方案-不勾选打开方案创建后不出现在最近打开
+    type: core
+    category: 最近打开
+    expected: success
+    check: not_in_recent_open
