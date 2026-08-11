@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # UI Auto (Python + Playwright + Pytest)
 
 小型 UI 自动化框架：方案 A 自管 Browser，POM + YAML 数据驱动。
@@ -57,3 +58,6 @@ allure open reports/allure-report
 - 成功登录账号写在 `.env`：`LOGIN_USERNAME` / `LOGIN_PASSWORD`
 - 用例与数据分离：`tests/` 写逻辑，`data/login.yaml` 写期望文案与用例
 - 失败截图自动保存到 `reports/`
+=======
+# requirement_UI
+>>>>>>> e660addb5399dff24886d73a326fb4666d77b16f
