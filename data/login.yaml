@@ -1,0 +1,42 @@
+# 登录页期望文案（与 http://192.168.4.171:40013/webapp/#/login 对齐）
+page:
+  title: 体系数字工程开发平台
+  tool_name: KD-SDP
+  cn_name: 体系数字工程
+  en_name: System of Systems Digital Engineering Development Platform
+
+# type: smoke=冒烟测试 | system=系统测试 | core=核心测试
+# 正确账号请在 .env 配置 LOGIN_USERNAME / LOGIN_PASSWORD
+cases:
+  - case: 正确账号登录
+    type: core
+    use_env: true
+    expected: success
+
+  - case: 用户名为空
+    type: smoke
+    username: ""
+    password: test_password
+    expected: fail
+    message: 请输入您的用户名
+
+  - case: 密码为空
+    type: smoke
+    username: admin
+    password: ""
+    expected: fail
+    message: 请输入您的登录密码
+
+  - case: 用户名不正确
+    type: system
+    username: admin234234
+    password: wrong_password_for_test
+    expected: fail
+    message: 用户名不存在
+
+  - case: 密码不正确
+    type: system
+    username: admin
+    password: wrong_password_for_test
+    expected: fail
+    message: invalid_grant
